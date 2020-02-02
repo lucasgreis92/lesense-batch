@@ -21,7 +21,7 @@ public class LesenseBatchController {
 
     final static Logger log = LoggerFactory.getLogger(LesenseBatchController.class);
 
-    @Scheduled(cron = "*/30 * * ? * *")
+    @Scheduled(cron = "*/10 * * ? * *")
     public void generateCallbackMarkup() {
         lesenseBatchService.generateCallbackMarkupStart();
     }
