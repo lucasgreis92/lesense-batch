@@ -19,7 +19,7 @@ public interface SensorsRepository extends JpaRepository<Sensors, UUID> {
             "where cm.sensor_id is null " +
             "and  collected > (CURRENT_DATE - INTERVAL '3 months') " +
             "order by collected desc " +
-            "limit 500",
+            "limit 1000",
             nativeQuery = true)
     List<Sensors> findNewSensors();
 
