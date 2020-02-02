@@ -1,5 +1,6 @@
 package br.com.spintec.logicae.lesensebatch.service;
 
+import br.com.spintec.logicae.lesensebatch.dto.PacoteSensorsDtoV1;
 import br.com.spintec.logicae.lesensebatch.dto.SensorsDtoV1;
 import br.com.spintec.logicae.lesensebatch.model.CallbackMarkup;
 import br.com.spintec.logicae.lesensebatch.model.Callbacks;
@@ -52,6 +53,7 @@ public class SensorsService {
             }
             return new AsyncResult<>(res);
         } catch(Exception ex) {
+            log.error(ex.getMessage());
             log.error("Ocorreu um erro ao enviar um pacote com " + pacote.size() + " registros para o callback " + callbacks.getDescription());
             return new AsyncResult(ResponseEntity.status(500).build());
         }

@@ -1,6 +1,9 @@
 package br.com.spintec.logicae.lesensebatch.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.Column;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -9,12 +12,12 @@ public class SensorsDtoV1 {
     private UUID id;
    // private String username;
     private String serial;
-    private LocalDateTime timestamp;//collected;
+    private Long timestamp;//collected;
    // private LocalDateTime created;
     private String version;
     private String type;
     private Double value;
-    private Long sensor;//port;
+    private float sensor;//port;
   //  private String tags;
     private String model;
 
@@ -34,11 +37,11 @@ public class SensorsDtoV1 {
         this.serial = serial;
     }
 
-    public LocalDateTime getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -66,11 +69,11 @@ public class SensorsDtoV1 {
         this.value = value;
     }
 
-    public Long getSensor() {
+    public float getSensor() {
         return sensor;
     }
 
-    public void setSensor(Long sensor) {
+    public void setSensor(float sensor) {
         this.sensor = sensor;
     }
 
