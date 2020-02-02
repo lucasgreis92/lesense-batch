@@ -1,6 +1,5 @@
 package br.com.spintec.logicae.lesensebatch.service;
 
-import br.com.spintec.logicae.lesensebatch.controller.v1.LesenseBatchController;
 import br.com.spintec.logicae.lesensebatch.dto.SensorsDtoV1;
 import br.com.spintec.logicae.lesensebatch.mapper.SensorsMapper;
 import br.com.spintec.logicae.lesensebatch.model.*;
