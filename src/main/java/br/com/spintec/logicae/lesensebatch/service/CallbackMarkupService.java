@@ -1,6 +1,7 @@
 package br.com.spintec.logicae.lesensebatch.service;
 
 import br.com.spintec.logicae.lesensebatch.model.CallbackMarkup;
+import br.com.spintec.logicae.lesensebatch.model.Sensors;
 import br.com.spintec.logicae.lesensebatch.repository.CallbackMarkupRepository;
 import br.com.spintec.logicae.lesensebatch.repository.CallbacksRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,5 +31,12 @@ public class CallbackMarkupService {
         return callbackMarkupRepository.findAllByDoneFalseAndCallbackId(callbackId);
     }
 
+    public List<CallbackMarkup> selectOldValue() {
+        return callbackMarkupRepository.selectOldValue();
+    }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deleteAll(List<CallbackMarkup> markups) {
+        callbackMarkupRepository.deleteAll(markups);
+    }
 }

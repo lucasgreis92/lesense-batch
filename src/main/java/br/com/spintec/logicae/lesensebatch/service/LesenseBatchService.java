@@ -49,9 +49,12 @@ public class LesenseBatchService {
     private String lesensePackgeSize;
 
     private Semaphore semaphoreGenerateCallbackMarkup = new Semaphore(1);
+    private Semaphore semaphoreSendSensors = new Semaphore(1);
+    private Semaphore semaphoreDeleteOldRegisters = new Semaphore(1);
+
     private static boolean ieGenerateCallbackMarkup = false;
     private static boolean ieSendSensors = false;
-    private Semaphore semaphoreSendSensors = new Semaphore(1);
+    private static boolean ieDeleteOldRegisters = false;
 
     final static Logger log = LoggerFactory.getLogger(LesenseBatchService.class);
 
@@ -65,9 +68,9 @@ public class LesenseBatchService {
             ieGenerateCallbackMarkup = true;
             semaphoreGenerateCallbackMarkup.release();
 
-            log.info("iniciado generateCallbackMarkup");
+            log.info("#########################  iniciado generateCallbackMarkup #########################");
             generateCallbackMarkup();
-            log.info("finalizado generateCallbackMarkup");
+            log.info("######################### finalizado generateCallbackMarkup #########################");
 
         } catch (Exception ex) {
             log.error("erro generateCallbackMarkup",ex);
@@ -92,9 +95,9 @@ public class LesenseBatchService {
             ieSendSensors= true;
             semaphoreSendSensors.release();
 
-            log.info("iniciado sendSensors");
+            log.info("######################### iniciado sendSensors #########################");
             sendSensors();
-            log.info("finalizado sendSensors");
+            log.info("######################### finalizado sendSensors #########################");
 
         } catch (Exception ex) {
             log.error("erro sendSensors",ex);
@@ -165,7 +168,7 @@ public class LesenseBatchService {
                         inserts.add(callbackMarkup);
                     });
                 } else {
-                    log.warn("O device " + device.get().getDeviceSerial() + " não está cadastrado");
+                    log.warn("O device " + s.getDeviceSerial() + " não está cadastrado");
                     CallbackMarkup callbackMarkup = new CallbackMarkup();
                     callbackMarkup.setCallbackId(null);
                     callbackMarkup.setDone(true);
@@ -340,4 +343,35 @@ public class LesenseBatchService {
     }
 
 
+    @Async
+    public void deleteOldRegisters() {
+        try {
+            semaphoreDeleteOldRegisters.acquire();
+            if (ieDeleteOldRegisters) {
+                return;
+            }
+            ieDeleteOldRegisters = true;
+            semaphoreDeleteOldRegisters.release();
+
+
+            log.info("#########################  iniciado deleteOldRegisters #########################");
+            log.info("excluindo sensores com mais de 6 meses");
+            sensorsService.deleteAll(sensorsService.selectOldValue());
+            log.info("excluindo callback_markup com mais de 6 meses");
+            callbackMarkupService.deleteAll(callbackMarkupService.selectOldValue());
+            log.info("#########################  finalizado deleteOldRegisters #########################");
+
+
+        } catch(Exception ex) {
+            log.error("erro deleteOldRegisters", ex);
+        } finally {
+            try {
+                semaphoreDeleteOldRegisters.acquire();
+                ieDeleteOldRegisters = false;
+                semaphoreDeleteOldRegisters.release();
+            } catch (InterruptedException e) {
+                log.error("erro deleteOldRegisters", e);
+            }
+        }
+    }
 }

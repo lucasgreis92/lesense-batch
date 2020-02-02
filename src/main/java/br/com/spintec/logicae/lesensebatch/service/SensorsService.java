@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
@@ -66,5 +67,14 @@ public class SensorsService {
 
     public Optional<Sensors> findById(UUID sensorId) {
         return sensorsRepository.findById(sensorId);
+    }
+
+    public List<Sensors>  selectOldValue(){
+        return sensorsRepository.selectOldValue();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deleteAll(List<Sensors> sensors) {
+        sensorsRepository.deleteAll(sensors);
     }
 }
