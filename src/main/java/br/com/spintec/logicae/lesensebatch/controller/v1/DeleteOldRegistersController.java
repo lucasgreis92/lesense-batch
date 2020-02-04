@@ -13,7 +13,7 @@ public class DeleteOldRegistersController {
     @Autowired
     private LesenseBatchService lesenseBatchService;
 
-  //  @Scheduled(cron = "*/30 * * ? * *")
+    @Scheduled(cron = "*/30 * * ? * *")
     public void deleteOldRegisters() {
         lesenseBatchService.deleteOldRegisters();
     }

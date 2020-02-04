@@ -86,6 +86,7 @@ public class LesenseBatchService {
         }
     }
 
+    @Async
     public void sendSensorsStart() {
         try {
             semaphoreSendSensors.acquire();
