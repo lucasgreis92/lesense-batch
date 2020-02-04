@@ -36,4 +36,6 @@ public interface SensorsRepository extends JpaRepository<Sensors, UUID> {
     @Query(value= "select * from sensors where collected < (now() - interval '6 months')",
             nativeQuery = true)
     List<Sensors>  selectOldValue();
+
+
 }

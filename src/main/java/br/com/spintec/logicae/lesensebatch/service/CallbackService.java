@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class CallbackService {
 
@@ -16,5 +18,9 @@ public class CallbackService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Callbacks save(Callbacks callbacks) {
         return callbacksRepository.saveAndFlush(callbacks);
+    }
+
+    public List<Callbacks> findAll() {
+        return callbacksRepository.findAll();
     }
 }

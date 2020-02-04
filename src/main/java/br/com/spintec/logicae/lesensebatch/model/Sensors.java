@@ -106,10 +106,6 @@ public class Sensors {
     return port;
   }
 
-  public void setPort(long port) {
-    this.port = port;
-  }
-
 
   public String getTags() {
     return tags;

@@ -79,4 +79,9 @@ public class SensorsService {
     public void deleteAll(List<Sensors> sensors) {
         sensorsRepository.deleteAll(sensors);
     }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Sensors save(Sensors sensors) {
+        return sensorsRepository.save(sensors);
+    }
 }
