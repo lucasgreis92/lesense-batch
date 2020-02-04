@@ -232,6 +232,14 @@ public class LesenseBatchService {
             callbacks.forEach(callback -> {
                 if ("off".equalsIgnoreCase(callback.getStatus())) {
                     log.info("O callback " + callback.getDescription() + " está desativado");
+                    List<CallbackMarkup> markupOff =  callbackMarkupService.findAllByDoneFalseAndCallbackId(callback.getCallbackId());
+                    markupOff.forEach(m -> {
+                        m.setDone(true);
+                    });
+                    if (markupOff.size() > 0) {
+                        callbackMarkupService.saveAll(markupOff);
+                    }
+
                 }
                 if (!"off".equalsIgnoreCase(callback.getStatus())) {
 
