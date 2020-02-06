@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -403,49 +404,7 @@ public class LesenseBatchService {
             ieGenerateSensorTest = true;
             semaphoreGenerateSensorTest.release();
 
-            Optional<Devices> deviceTeste = devicesRepository.findById(TESTE_DEVICE_SERIAL);
-            Devices dev = null;
-            if (deviceTeste.isPresent()) {
-                dev = new Devices();
-                dev.setCreated(LocalDateTime.now());
-                dev.setDeviceSerial(TESTE_DEVICE_SERIAL);
-                dev.setStatus("ok");
-                dev.setLastAck(LocalDateTime.now());
-                dev.setContractId(UUID.fromString("af42e8d0-d099-455c-b23f-5cbb505ed018"));
-                dev.setDisabled(false);
-                dev.setLastResponseCode(200L);
-                dev.setType("LS1-GPRS");
-                dev.setToken("eyJhbGciOiJIUzI1NiJ9.eyJzIjoiMTYwNjE1MDAwMSIsImMiOjE0NjU5NTM0ODZ9.TK8BB6QVtSj_zRrtEgtRW9Z1o2ZciYzxIhKSsWyRhXQ");
-
-            } else {
-                dev = deviceTeste.get();
-            }
-            List<Callbacks> cbs = callbackService.findAll();
-            String arr = "";
-            for (Callbacks cb : cbs){
-                if (arr.isEmpty()) {
-                    arr += "\""+cb.getCallbackId().toString()+"\"";
-                }else {
-                    arr += ",\""+cb.getCallbackId().toString()+"\"";
-                }
-            }
-            arr = "["+arr+"]";
-            ObjectMapper objectMapper = new ObjectMapper();
-            dev.setCallbacksId(objectMapper.readTree(arr));
-            dev = devicesRepository.saveAndFlush(dev);
-            Sensors sensors = new Sensors();
-            sensors.setCollected(LocalDateTime.now());
-            sensors.setCreated(LocalDateTime.now());
-            sensors.setPort(0L);
-            sensors.setDeviceSerial(TESTE_DEVICE_SERIAL);
-            sensors.setModel("LS1-GPRS");
-            sensors.setId(UUID.randomUUID());
-            sensors.setUsername("cianove");
-            sensors.setType("Switch");
-            sensors.setVersion("1.0");
-            sensors.setValue(1d);
-            sensorsService.save(sensors);
-
+            generateSensorTestStart();
         } catch(Exception ex) {
             log.error("erro generateSensorTest", ex);
         } finally {
@@ -457,5 +416,51 @@ public class LesenseBatchService {
                 log.error("erro generateSensorTest", e);
             }
         }
+    }
+
+    public void generateSensorTestStart() throws IOException {
+        Optional<Devices> deviceTeste = devicesRepository.findById(TESTE_DEVICE_SERIAL);
+        Devices dev = null;
+        if (deviceTeste.isPresent()) {
+            dev = new Devices();
+            dev.setCreated(LocalDateTime.now());
+            dev.setDeviceSerial(TESTE_DEVICE_SERIAL);
+            dev.setStatus("ok");
+            dev.setLastAck(LocalDateTime.now());
+            dev.setContractId(UUID.fromString("af42e8d0-d099-455c-b23f-5cbb505ed018"));
+            dev.setDisabled(false);
+            dev.setLastResponseCode(200L);
+            dev.setType("LS1-GPRS");
+            dev.setToken("eyJhbGciOiJIUzI1NiJ9.eyJzIjoiMTYwNjE1MDAwMSIsImMiOjE0NjU5NTM0ODZ9.TK8BB6QVtSj_zRrtEgtRW9Z1o2ZciYzxIhKSsWyRhXQ");
+
+        } else {
+            dev = deviceTeste.get();
+        }
+        List<Callbacks> cbs = callbackService.findAll();
+        String arr = "";
+        for (Callbacks cb : cbs){
+            if (arr.isEmpty()) {
+                arr += "\""+cb.getCallbackId().toString()+"\"";
+            }else {
+                arr += ",\""+cb.getCallbackId().toString()+"\"";
+            }
+        }
+        arr = "["+arr+"]";
+        ObjectMapper objectMapper = new ObjectMapper();
+        dev.setCallbacksId(objectMapper.readTree(arr));
+        dev = devicesRepository.saveAndFlush(dev);
+        Sensors sensors = new Sensors();
+        sensors.setCollected(LocalDateTime.now());
+        sensors.setCreated(LocalDateTime.now());
+        sensors.setPort(0L);
+        sensors.setDeviceSerial(TESTE_DEVICE_SERIAL);
+        sensors.setModel("LS1-GPRS");
+        sensors.setId(UUID.randomUUID());
+        sensors.setUsername("cianove");
+        sensors.setType("Switch");
+        sensors.setVersion("1.0");
+        sensors.setValue(1d);
+        sensorsService.save(sensors);
+
     }
 }

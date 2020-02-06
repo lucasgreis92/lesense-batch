@@ -11,8 +11,8 @@ public class SensorTestController {
     @Autowired
     private LesenseBatchService lesenseBatchService;
 
-    @Scheduled(cron = "*/30 * * ? * *")
+  //  @Scheduled(cron = "*/30 * * ? * *")
     public void generateSensorTest() {
-        lesenseBatchService.generateSensorTest();
+      //  lesenseBatchService.generateSensorTest();
     }
 }
