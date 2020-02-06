@@ -29,7 +29,7 @@ public interface SensorsRepository extends JpaRepository<Sensors, UUID> {
             "on s.id = cm.sensor_id " +
             "where collected > (CURRENT_DATE - INTERVAL '1 days')  " +
             "and not done " +
-            "order by collected asc",
+            "order by collected desc",
              nativeQuery = true)
     List<Sensors> findToSend();
 
