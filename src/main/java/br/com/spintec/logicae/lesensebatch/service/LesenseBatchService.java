@@ -279,18 +279,14 @@ public class LesenseBatchService {
                             markupSendingList.add(m);
 
                             if (lesensePackgeSizeInt <= sendingList.size()) {
+                                if (!dones.isEmpty()) {
+                                    callbackMarkupService.saveAll(dones);
+                                    dones.clear();
+                                }
                                 if (retornoThreads.containsKey(callback.getCallbackId().toString())) {
-                                    if (!dones.isEmpty()) {
-                                        callbackMarkupService.saveAll(dones);
-                                        dones.clear();
-                                    }
                                     retornoThreads.get(callback.getCallbackId().toString())
                                             .add(sensorsService.send(callback, new ArrayList<>(sendingList),new ArrayList<>(markupSendingList)));
                                 } else {
-                                    if (!dones.isEmpty()) {
-                                        callbackMarkupService.saveAll(dones);
-                                        dones.clear();
-                                    }
                                     List<Future<ResponseEntity<Object>>> lista = new ArrayList<>();
                                     lista.add( sensorsService.send(callback, new ArrayList<>(sendingList),new ArrayList<>(markupSendingList)));
                                     retornoThreads.put(callback.getCallbackId().toString(),lista);
@@ -324,19 +320,7 @@ public class LesenseBatchService {
 
                 }
             });
-            log.info("Aguardando a finalização da threads de envio ");
-            while(retornoThreads.keySet()
-                    .stream()
-                    .filter( callBackId -> {
-                        return retornoThreads.get(callBackId)
-                                .stream().filter( res -> {
-                                    return !res.isDone();
-                                }).findFirst().isPresent();
-                    } ).findFirst().isPresent()) {
-
-                Thread.currentThread().sleep(5000);
-            }
-            log.info("Threads de envio finalizadas ");
+            aguardarThreads(retornoThreads);
             retornoThreads.keySet().forEach( callBackId -> {
                 Optional<Future<ResponseEntity<Object>>> future = retornoThreads.get(callBackId)
                         .stream()
@@ -374,6 +358,26 @@ public class LesenseBatchService {
         } finally {
             finalizarBatch(batch, qtdRowsGenerated, qtdRowsSended, error);
         }
+    }
+
+    public void aguardarThreads(HashMap<String,List<Future<ResponseEntity<Object>>>> retornoThreads) {
+        log.info("Aguardando a finalização da threads de envio ");
+        while(retornoThreads.keySet()
+                .stream()
+                .filter( callBackId -> {
+                    return retornoThreads.get(callBackId)
+                            .stream().filter( res -> {
+                                return !res.isDone();
+                            }).findFirst().isPresent();
+                } ).findFirst().isPresent()) {
+
+            try {
+                Thread.currentThread().sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        log.info("Threads de envio finalizadas ");
     }
 
 
