@@ -258,7 +258,7 @@ public class LesenseBatchService {
                     log.info("Foram encontrados " + markups.size() + " markups para o callback " + callback.getDescription() + " que está sendo executado");
                     List<Sensors> sensorsToSend = sensorsService.findToSend();
                     log.info("Foram encontrados " + sensorsToSend.size() + " registros na sensors para o callback " + callback.getDescription() + " que está sendo executado");
-
+                    List<CallbackMarkup> dones = new ArrayList<>();
                     if (markups.size() == 0 ){
                         callback.setStatus("on");
                         callbackService.save(callback);
@@ -277,20 +277,31 @@ public class LesenseBatchService {
                             SensorsDtoV1 dto = sensorsMapper.convertToDto(sensors.get());
                             sendingList.add(dto);
                             markupSendingList.add(m);
-                        } else {
-                            log.warn("Não foi encontrado o sensor " + m.getSensorId().toString());
-                        }
-                        if (lesensePackgeSizeInt <= sendingList.size()) {
-                            if (retornoThreads.containsKey(callback.getCallbackId().toString())) {
-                                retornoThreads.get(callback.getCallbackId().toString())
-                                        .add(sensorsService.send(callback, new ArrayList<>(sendingList),new ArrayList<>(markupSendingList)));
-                            } else {
-                                List<Future<ResponseEntity<Object>>> lista = new ArrayList<>();
-                                lista.add( sensorsService.send(callback, new ArrayList<>(sendingList),new ArrayList<>(markupSendingList)));
-                                retornoThreads.put(callback.getCallbackId().toString(),lista);
+
+                            if (lesensePackgeSizeInt <= sendingList.size()) {
+                                if (retornoThreads.containsKey(callback.getCallbackId().toString())) {
+                                    if (!dones.isEmpty()) {
+                                        callbackMarkupService.saveAll(dones);
+                                        dones.clear();
+                                    }
+                                    retornoThreads.get(callback.getCallbackId().toString())
+                                            .add(sensorsService.send(callback, new ArrayList<>(sendingList),new ArrayList<>(markupSendingList)));
+                                } else {
+                                    if (!dones.isEmpty()) {
+                                        callbackMarkupService.saveAll(dones);
+                                        dones.clear();
+                                    }
+                                    List<Future<ResponseEntity<Object>>> lista = new ArrayList<>();
+                                    lista.add( sensorsService.send(callback, new ArrayList<>(sendingList),new ArrayList<>(markupSendingList)));
+                                    retornoThreads.put(callback.getCallbackId().toString(),lista);
+                                }
+                                sendingList.clear();
+                                markupSendingList.clear();
                             }
-                            sendingList.clear();
-                            markupSendingList.clear();
+                        } else {
+                            m.setDone(true);
+                            dones.add(m);
+                            log.warn("Não foi encontrado o sensor " + m.getSensorId().toString());
                         }
 
                     });
@@ -305,6 +316,10 @@ public class LesenseBatchService {
                         }
                         sendingList.clear();
                         markupSendingList.clear();
+                    }
+                    if (!dones.isEmpty()) {
+                        callbackMarkupService.saveAll(dones);
+                        dones.clear();
                     }
 
                 }
