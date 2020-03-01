@@ -17,7 +17,7 @@ public interface SensorsRepository extends JpaRepository<Sensors, UUID> {
             "left join callback_markup cm " +
             "on s.id = cm.sensor_id " +
             "where cm.sensor_id is null " +
-            "and  collected > (CURRENT_DATE - INTERVAL '1 days') " +
+            "and  collected > (CURRENT_DATE - INTERVAL '30 days') " +
             "order by collected desc " +
             "limit 1000",
             nativeQuery = true)
@@ -27,7 +27,7 @@ public interface SensorsRepository extends JpaRepository<Sensors, UUID> {
             "from sensors s " +
             "join callback_markup cm " +
             "on s.id = cm.sensor_id " +
-            "where collected > (CURRENT_DATE - INTERVAL '1 days')  " +
+            "where collected > (CURRENT_DATE - INTERVAL '30 days')  " +
             "and not done " +
             "order by collected desc",
              nativeQuery = true)

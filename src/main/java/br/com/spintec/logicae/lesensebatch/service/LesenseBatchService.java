@@ -67,8 +67,6 @@ public class LesenseBatchService {
 
     final static Logger log = LoggerFactory.getLogger(LesenseBatchService.class);
 
-
-    @Async
     public void generateCallbackMarkupStart() {
         try {
             semaphoreGenerateCallbackMarkup.acquire();
@@ -96,7 +94,6 @@ public class LesenseBatchService {
         }
     }
 
-    @Async
     public void sendSensorsStart() {
         try {
             semaphoreSendSensors.acquire();
@@ -380,8 +377,6 @@ public class LesenseBatchService {
         log.info("Threads de envio finalizadas ");
     }
 
-
-    @Async
     public void deleteOldRegisters() {
         try {
             semaphoreDeleteOldRegisters.acquire();
